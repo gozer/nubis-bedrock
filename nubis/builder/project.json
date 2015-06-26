@@ -1,0 +1,13 @@
+{
+  "variables": {
+    "automatic_version_bump": "1",
+    "automatic_version_verify": "1",
+    "builders": [
+      "amazon-ebs-ubuntu"
+    ],
+    "project_description": "Nubis deploy of Bedrock",
+    "project_name": "nubis-bedrock",
+    "project_version": "0.29",
+    "source_ami_project_name": "nubis-base"
+  }
+}

@@ -1,0 +1,33 @@
+{
+"provisioners": [
+  {
+    "type": "shell",
+    "inline": [
+        "sudo mkdir -p -m 755 /data/www",
+        "sudo chown ubuntu:ubuntu /data/www",
+        "sudo apt-get install -y git",
+        "git clone --depth 1 https://github.com/mozilla/bedrock /data/www/bedrock"
+    ],
+    "order": "1"
+  },
+  {
+    "type": "file",
+    "source": "nubis/bin/local.py",
+    "destination": "/data/www/bedrock/bedrock/settings/local.py",
+    "order": "3"
+  },
+  {
+    "type": "file",
+    "source": "nubis/bin/manage-commands.sh",
+    "destination": "/data/www/bedrock/manage-commands.sh",
+    "order": "3"
+  },
+  {
+    "type": "shell",
+    "inline": [
+        "sh /data/www/bedrock/manage-commands.sh"
+    ],
+    "order": "20"
+  }
+]
+}
