@@ -8,7 +8,7 @@ $vhost_name = 'bedrock'
 $install_root = '/data/www/bedrock'
 $wsgi_path = '/data/www/bedrock/wsgi/playdoh.wsgi'
 $static_root = '/data/www/bedrock/static/'
-$port = 80
+$port = 8080
 
 include nubis_discovery
 
@@ -23,7 +23,8 @@ class {
     'apache':
         default_mods        => true,
         default_vhost       => false,
-        default_confd_files => false;
+        default_confd_files => false,
+        mpm_module          => 'prefork';
     'apache::mod::wsgi':
         wsgi_socket_prefix => '/var/run/wsgi';
     'apache::mod::remoteip':

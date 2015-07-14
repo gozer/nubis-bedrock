@@ -4,7 +4,8 @@
 ADMINS = ('foo@bar.com',)
 MANAGERS = ADMINS
 
-DEBUG = TEMPLATE_DEBUG = DEV = True
+DEBUG = TEMPLATE_DEBUG = False
+DEV = True
 
 # Settings for Download Firefox Facebook tab
 #FACEBOOK_PAGE_NAMESPACE = ''
@@ -27,11 +28,25 @@ TWITTER_APP_KEYS = {
     },
 }
 
+import imp
+nubis = imp.load_source('nubis', '/etc/nubis-config/bedrock.sh')
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/data/www/bedrock/bedrock.db',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': nubis.DB_NAME,
+        'USER': nubis.DB_USERNAME,
+        'PASSWORD': nubis.DB_PASSWORD,
+        'HOST': nubis.DB_SERVER,
     }
 }
 
-DEBUG = TEMPLATE_DEBUG = False
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': [
+            nubis.MemCachedEndpoint,
+        ],
+        'KEY_PREFIX': 'bedrock'
+    }
+}

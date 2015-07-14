@@ -3,6 +3,11 @@ class { 'python':
   pip        => true,
   dev        => true,
 }
+package { 'python-mysqldb':
+    ensure => present,
+    require => Exec['apt-get update'],
+    before => Class['python']
+}
 
 python::requirements { '/data/www/bedrock/requirements/dev.txt':
   require => Class['python']
@@ -28,6 +33,7 @@ package {
     'libxslt-dev',
     'libz-dev',
     'nodejs',
+    'mysql-client',
   ]:
     ensure => present,
     require  => Exec['apt-get update'],

@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "Demo bedrock deployment for the nubis project.",
+  "Description": "Bedrock deployment using Nubis.",
   "Parameters": {
     "ServiceName": {
       "Description": "Name of the service",
@@ -22,7 +22,7 @@
       "Default": "nubis.allizom.org",
       "Type": "String"
     },
-    "KeyName": {
+    "SSHKeyName": {
       "Description": "Existing ssh key to deploy to EC2 instances",
       "Type": "String"
     },
@@ -33,6 +33,11 @@
     "AmiId": {
       "Description": "The id of the ami for this region",
       "Type": "String"
+    },
+    "StacksVersion": {
+      "Description": "Version of the Nubis Stacks",
+      "Type": "String",
+      "Default": "master"
     }
   },
   "Mappings": {
@@ -70,8 +75,8 @@
           "AmiId": {
             "Ref": "AmiId"
           },
-          "KeyName": {
-            "Ref": "KeyName"
+          "SSHKeyName": {
+            "Ref": "SSHKeyName"
           },
           "InstanceType": {
             "Fn::FindInMap": [
@@ -109,6 +114,59 @@
           "ElbHealthTarget": "HTTP:80/"
         }
       }
+    },
+    "RDSStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "/", [ "https://s3.amazonaws.com/nubisproject-stacks", { "Ref": "StacksVersion" }, "rds-mysql.template" ] ] },
+        "TimeoutInMinutes": "60",
+        "Parameters": {
+          "ServiceName": {
+            "Ref": "ServiceName"
+          },
+          "TechnicalOwner": {
+            "Ref": "TechnicalOwner"
+          },
+          "Environment": {
+            "Ref": "Environment"
+          },
+          "AllocatedStorage": "15",
+          "DBInstanceClass": "db.t1.micro",
+          "DBName": {
+            "Ref": "ServiceName"
+          },
+          "EC2SecurityGroup": {
+            "Fn::GetAtt": [
+              "EC2Stack",
+              "Outputs.EC2SecurityGroup"
+            ]
+          }
+        }
+      }
+    },
+    "MemcacheStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": { "Fn::Join": [ "/", [ "https://s3.amazonaws.com/nubisproject-stacks", { "Ref": "StacksVersion" }, "memcache.template" ] ] },
+        "TimeoutInMinutes": "60",
+        "Parameters": {
+          "ServiceName": {
+            "Ref": "ServiceName"
+          },
+          "TechnicalOwner": {
+            "Ref": "TechnicalOwner"
+          },
+          "Environment": {
+            "Ref": "Environment"
+          },
+          "EC2SecurityGroup": {
+            "Fn::GetAtt": [
+              "EC2Stack",
+              "Outputs.GroupId"
+            ]
+          }
+        }
+      }
     }
   },
   "Outputs": {
@@ -118,6 +176,69 @@
         "Fn::GetAtt": [
           "ELBStack",
           "Outputs.DNSName"
+        ]
+      }
+    },
+    "canonicalServer": {
+      "Description": "Consul: config/ Server url",
+      "Value": {
+        "Fn::Join": [
+          ".",
+          [
+            "https://www",
+            {
+              "Ref": "AWS::StackName"
+            },
+            {
+              "Ref": "Environment"
+            },
+            "nubis.allizom.org"
+          ]
+        ]
+      }
+    },
+    "DB_SERVER": {
+      "Description": "Consul: config/ Database endpoint",
+      "Value": {
+        "Fn::GetAtt": [
+          "RDSStack",
+          "Outputs.RDSEndpoint"
+        ]
+      }
+    },
+    "DB_NAME": {
+      "Description": "Consul: config/ Database name",
+      "Value": {
+        "Fn::GetAtt": [
+          "RDSStack",
+          "Outputs.RDSName"
+        ]
+      }
+    },
+    "DB_USER": {
+      "Description": "Consul: config/ Database user",
+      "Value": {
+        "Fn::GetAtt": [
+          "RDSStack",
+          "Outputs.RDSUser"
+        ]
+      }
+    },
+    "MemCachedEndpoint": {
+      "Description": "Consul: config/ Database user",
+      "Value": {
+        "Fn::GetAtt": [
+          "MemcacheStack",
+          "Outputs.Endpoint"
+        ]
+      }
+    },
+    "MemCachedPort": {
+      "Description": "Consul: config/ Database user",
+      "Value": {
+        "Fn::GetAtt": [
+          "MemcacheStack",
+          "Outputs.Port"
         ]
       }
     }
