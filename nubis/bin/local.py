@@ -34,10 +34,10 @@ nubis = imp.load_source('nubis', '/etc/nubis-config/bedrock.sh')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': nubis.DB_NAME,
-        'USER': nubis.DB_USERNAME,
-        'PASSWORD': nubis.DB_PASSWORD,
-        'HOST': nubis.DB_SERVER,
+        'NAME': nubis.DBNAME,
+        'USER': nubis.DBUSERNAME,
+        'PASSWORD': nubis.DBPASSWORD,
+        'HOST': nubis.DBSERVER,
     }
 }
 
@@ -45,7 +45,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': [
-            nubis.MemCachedEndpoint,
+            nubis.MemCachedEndpoint + ':' + nubis.MemCachedPort,
         ],
         'KEY_PREFIX': 'bedrock'
     }

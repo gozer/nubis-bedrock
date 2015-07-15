@@ -197,7 +197,7 @@
         ]
       }
     },
-    "DB_SERVER": {
+    "DBSERVER": {
       "Description": "Consul: config/ Database endpoint",
       "Value": {
         "Fn::GetAtt": [
@@ -206,7 +206,7 @@
         ]
       }
     },
-    "DB_NAME": {
+    "DBNAME": {
       "Description": "Consul: config/ Database name",
       "Value": {
         "Fn::GetAtt": [
@@ -215,7 +215,7 @@
         ]
       }
     },
-    "DB_USER": {
+    "DBUSER": {
       "Description": "Consul: config/ Database user",
       "Value": {
         "Fn::GetAtt": [

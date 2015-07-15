@@ -18,14 +18,14 @@
   },
   {
     "type": "file",
-    "source": "nubis/bin/manage-commands.sh",
-    "destination": "/data/www/bedrock/manage-commands.sh",
+    "source": "nubis/bin/migrate.sh",
+    "destination": "/data/www/migrate.sh",
     "order": "3"
   },
   {
     "type": "shell",
     "inline": [
-        "sh /data/www/bedrock/manage-commands.sh"
+        "/bin/bash /data/www/migrate.sh"
     ],
     "order": "20"
   }
