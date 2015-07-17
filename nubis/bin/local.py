@@ -35,7 +35,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': nubis.DBNAME,
-        'USER': nubis.DBUSERNAME,
+        'USER': nubis.DBUSER,
         'PASSWORD': nubis.DBPASSWORD,
         'HOST': nubis.DBSERVER,
     }

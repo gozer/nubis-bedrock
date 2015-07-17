@@ -43,7 +43,7 @@
   "Mappings": {
     "InstanceTypeMap": {
       "prod": {
-        "InstanceType": "m3.large"
+        "InstanceType": "m3.medium"
       },
       "stage": {
         "InstanceType": "m3.medium"
@@ -78,6 +78,9 @@
           "SSHKeyName": {
             "Ref": "SSHKeyName"
           },
+          "AutoScalingGroupMinSize": 1,
+          "AutoScalingGroupMaxSize": 4,
+          "AutoScalingGroupDesiredCapacity": 2,
           "InstanceType": {
             "Fn::FindInMap": [
               "InstanceTypeMap",
@@ -111,7 +114,7 @@
           "Environment": {
             "Ref": "Environment"
           },
-          "ElbHealthTarget": "HTTP:80/"
+          "ElbHealthTarget": "HTTP:80/en-US/"
         }
       }
     },
@@ -131,7 +134,7 @@
             "Ref": "Environment"
           },
           "AllocatedStorage": "15",
-          "DBInstanceClass": "db.t1.micro",
+          "DBInstanceClass": "db.t2.micro",
           "DBName": {
             "Ref": "ServiceName"
           },
@@ -225,7 +228,7 @@
       }
     },
     "MemCachedEndpoint": {
-      "Description": "Consul: config/ Database user",
+      "Description": "Consul: config/ memcached endpoint",
       "Value": {
         "Fn::GetAtt": [
           "MemcacheStack",
@@ -234,7 +237,7 @@
       }
     },
     "MemCachedPort": {
-      "Description": "Consul: config/ Database user",
+      "Description": "Consul: config/ memcached port",
       "Value": {
         "Fn::GetAtt": [
           "MemcacheStack",

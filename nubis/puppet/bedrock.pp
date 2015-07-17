@@ -2,14 +2,10 @@ class { 'python':
   version    => 'system',
   pip        => true,
   dev        => true,
-}
-package { 'python-mysqldb':
-    ensure => present,
-    require => Exec['apt-get update'],
-    before => Class['python']
+  require    => Exec['apt-get update'],
 }
 
-python::requirements { '/data/www/bedrock/requirements/dev.txt':
+python::requirements { '/data/www/bedrock/requirements/prod.txt':
   require => Class['python']
 }
 
@@ -34,6 +30,9 @@ package {
     'libz-dev',
     'nodejs',
     'mysql-client',
+    'newrelic-sysmond',
+    'libmysqlclient-dev',
+    'libmemcached-dev',
   ]:
     ensure => present,
     require  => Exec['apt-get update'],
@@ -48,5 +47,5 @@ include nubis_configuration
 
 nubis::configuration{ 'bedrock':
   format => "sh",
-  reload => "apache2ctl graceful",
+  reload => "apache2ctl restart",
 }

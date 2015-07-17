@@ -7,7 +7,7 @@
     ],
     "project_description": "Nubis deploy of Bedrock",
     "project_name": "nubis-bedrock",
-    "project_version": "0.39",
+    "project_version": "0.54",
     "source_ami_project_name": "nubis-base"
   }
 }
