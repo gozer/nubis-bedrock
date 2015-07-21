@@ -8,7 +8,10 @@
         "sudo apt-get install -y git",
         "git clone --depth 1 https://github.com/mozilla/bedrock /data/www/bedrock",
         "sudo sh -c 'echo deb http://apt.newrelic.com/debian/ newrelic non-free >> /etc/apt/sources.list.d/newrelic.list'",
-        "sudo sh -c 'wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -'"
+        "sudo sh -c 'wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -'",
+        "echo 'DBNAME=\"test\"\nDBUSER=\"test\"\nDBSERVER=\"test\"\nDBPASSWORD=\"test\"\nMemCachedEndpoint=\"localhost\"\nMemCachedPort=\"11211\"\n' > ~/bedrock.sh",
+        "sudo mv ~/bedrock.sh /etc/nubis-config/bedrock.sh",
+        "cat /etc/nubis-config/bedrock.sh"
     ],
     "order": "1"
   },
@@ -32,6 +35,13 @@
         "sudo chmod 755 /etc/nubis.d/migrate"
     ],
     "order": "13"
+  },
+  {
+    "type": "shell",
+    "inline": [
+        "sudo rm /etc/nubis-config/bedrock.sh"
+    ],
+    "order": "99"
   }
 ]
 }

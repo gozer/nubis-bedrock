@@ -82,21 +82,28 @@ rm -f .DBDEFAULTS
 
 . /etc/nubis-config/bedrock.sh
 
-newrelic-admin generate-config $NEW_RELIC_LICENSE_KEY > /etc/newrelic.ini
-sed -i -r -e 's/^high_security = false$/high_security = true/' /etc/newrelic.ini
-sed -i -r -e "s/^app_name = Python Application\$/app_name = ${NUBIS_STACK}-${NUBIS_ENVIRONMENT}/" /etc/newrelic.ini
-
-sudo sh -c "nrsysmond-config --set license_key=$NEW_RELIC_LICENSE_KEY"
-sudo sed -i -r -e "s/^#hostname=myhost/hostname=${NUBIS_STACK}-${NUBIS_ENVIRONMENT}-$(ec2metadata | grep 'instance-id' | cut -f2 -d' ')-$(ec2metadata | grep 'availability-zone' | cut -f2 -d' ')/" /etc/newrelic/nrsysmond.cfg
-sudo sed -i -r -e "s/^#disable_docker=false/disable_docker=true/" /etc/newrelic/nrsysmond.cfg
-sudo sed -i -r -e "s/^#labels=label_type:label_value/labels=Environment:${NUBIS_ENVIRONMENT};DataCenter:$(ec2metadata | grep 'availability-zone' | cut -f2 -d' ')/" /etc/newrelic/nrsysmond.cfg
-
-sudo sh -c 'echo "export NEWRELIC_PYTHON_INI_FILE=/etc/newrelic.ini" >> /etc/apache2/envvars'
+# New Relic is currently broken because the license key isn't in Consul, because it's public :(
+# sudo sh -c "newrelic-admin generate-config $NEW_RELIC_LICENSE_KEY > /etc/newrelic.ini"
+# sudo sed -i -r -e 's/^high_security = false$/high_security = true/' /etc/newrelic.ini
+# sudo sed -i -r -e "s/^app_name = Python Application\$/app_name = ${NUBIS_STACK}-${NUBIS_ENVIRONMENT}/" /etc/newrelic.ini
+#
+# sudo sh -c "nrsysmond-config --set license_key=$NEW_RELIC_LICENSE_KEY"
+# sudo sed -i -r -e "s/^#hostname=myhost/hostname=${NUBIS_STACK}-${NUBIS_ENVIRONMENT}-$(ec2metadata | grep 'instance-id' | cut -f2 -d' ')-$(ec2metadata | grep 'availability-zone' | cut -f2 -d' ')/" /etc/newrelic/nrsysmond.cfg
+# sudo sed -i -r -e "s/^#disable_docker=false/disable_docker=true/" /etc/newrelic/nrsysmond.cfg
+# sudo sed -i -r -e "s/^#labels=label_type:label_value/labels=Environment:${NUBIS_ENVIRONMENT};DataCenter:$(ec2metadata | grep 'availability-zone' | cut -f2 -d' ')/" /etc/newrelic/nrsysmond.cfg
+# sudo service newrelic-sysmond restart
+#
+# sudo sh -c 'echo "export NEWRELIC_PYTHON_INI_FILE=/etc/newrelic.ini" >> /etc/apache2/envvars'
 
 cd $INSTALL_ROOT
-python ./manage.py collectstatic --noinput
-python ./manage.py update_externalfiles
-python ./manage.py migrate
-python ./manage.py update_product_details
-
+# sudo python ./manage.py collectstatic --noinput  # bedrock now can use the DATABASE_URL env var, so we can do this during AMI build with puppet
+sudo python ./manage.py update_externalfiles
+sudo python ./manage.py migrate
+sudo python ./manage.py update_product_details
 sudo chown -R www-data /data/www/bedrock
+
+sudo service varnish stop
+sudo service apache2 restart
+sudo service varnish start
+sleep 3
+sudo service varnish start  # seems to take 2 times due to some kind of disk full error... I don't get it
