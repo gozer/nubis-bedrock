@@ -101,9 +101,3 @@ sudo python ./manage.py update_externalfiles
 sudo python ./manage.py migrate
 sudo python ./manage.py update_product_details
 sudo chown -R www-data /data/www/bedrock
-
-sudo service varnish stop
-sudo service apache2 restart
-sudo service varnish start
-sleep 3
-sudo service varnish start  # seems to take 2 times due to some kind of disk full error... I don't get it

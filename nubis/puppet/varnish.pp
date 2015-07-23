@@ -11,18 +11,23 @@ class {'varnish::ncsa': }
 
 class { 'varnish::vcl':
   backends => {}, # without this line you will not be able to redefine backend 'default'
-#  cookiekeeps => [ 'mediawiki[^=]*' ]
+#  cookiekeeps => [ 'mediawiki[^=]*' ],
+  logrealip => true,
+  honor_backend_ttl => true,
+  x_forwarded_proto => true,
+#  https_redirect => true,  # don't have a cert set up yet
+  cond_requests => true,
 }
 
-# varnish::probe {  'mediawiki_version':
-#   url => '/Special%3AVersion',
-#   timeout => '15s',
-# }
+varnish::probe {  'bedrock_homepage':
+  url => '/en-US/',
+  timeout => '10s',
+}
 
 varnish::backend { 'default':
   host  => '127.0.0.1',
   port  => '8080',
-#  probe => 'mediawiki_version',
+  probe => 'bedrock_homepage',
 }
 
 fluentd::configfile { 'varnish': }

@@ -170,6 +170,30 @@
           }
         }
       }
+    },
+    "Route53Stack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/nubisproject-stacks/master/route53.template",
+        "TimeoutInMinutes": "60",
+        "Parameters": {
+          "DNSName": {
+            "Ref": "AWS::StackName"
+          },
+          "Environment": {
+            "Ref": "Environment"
+          },
+          "BaseZone": {
+            "Ref": "BaseZone"
+          },
+          "ELBStack": {
+            "Fn::GetAtt": [
+              "ELBStack",
+              "Outputs.DNSName"
+            ]
+          }
+        }
+      }
     }
   },
   "Outputs": {
